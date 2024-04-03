@@ -5,8 +5,10 @@ import asyncio
 
 PORT_ECHO_UDP_1 = 4001
 PORT_ECHO_UDP_2 = 4002
+PORT_ECHO_UDP_3 = 4003
 PORT_ECHO_TCP_1 = 5001
 PORT_ECHO_TCP_2 = 5002
+PORT_ECHO_TCP_3 = 5003
 INADDR_ANY = "0.0.0.0"
 
 SERVER_NAME = platform.node()
@@ -49,6 +51,11 @@ async def main():
         lambda: UdpEchoServer(),
         local_addr=(INADDR_ANY, PORT_ECHO_UDP_2))
 
+    print(f"Starting UDP server on port {PORT_ECHO_UDP_3}")
+    await loop.create_datagram_endpoint(
+        lambda: UdpEchoServer(),
+        local_addr=(INADDR_ANY, PORT_ECHO_UDP_3))
+
     print(f"Starting TCP server on port {PORT_ECHO_TCP_1}")
     tcp_server_1 = await loop.create_server(
         lambda: TcpEchoServer(),
@@ -59,11 +66,18 @@ async def main():
         lambda: TcpEchoServer(),
         INADDR_ANY, PORT_ECHO_TCP_2)
 
+    print(f"Starting TCP server on port {PORT_ECHO_TCP_3}")
+    tcp_server_3 = await loop.create_server(
+        lambda: TcpEchoServer(),
+        INADDR_ANY, PORT_ECHO_TCP_3)
+
     async with tcp_server_1:
         await tcp_server_1.serve_forever()
 
     async with tcp_server_2:
         await tcp_server_2.serve_forever()
 
+    async with tcp_server_3:
+        await tcp_server_3.serve_forever()
 
 asyncio.run(main())
